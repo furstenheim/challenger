@@ -15,7 +15,7 @@ public class ChallengerTest {
     void fromString() throws IOException {
         Scanner scanner = new Scanner(new FileReader("src/test/resources/input.txt"));
 
-        String s = new Challenger().fromScanner(scanner, FirstTestExample.class);
+        String s = new Challenger().fromScanner(scanner, Integer.class);
         assertThat(s, is("1"));
         FirstTestQuery firstTestQuery = new FirstTestQuery();
         /*File file = new File("src/test/resources/input.txt");

@@ -11,6 +11,7 @@ class FirstTestExample {
     Integer nQueries;
     @ChallengeSerializable(index = 3, indexedBy = "nQueries", elemDelimiter = Delimiter.SPACE)
     List<FirstTestQuery> queries;
+    String fieldNotAnnotated;
 }
 class FirstTestCall {
     @ChallengeSerializable(index = 1)
