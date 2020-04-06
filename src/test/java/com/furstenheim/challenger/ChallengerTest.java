@@ -10,12 +10,10 @@ import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
 
 public class ChallengerTest {
-
     @Test
     void fromString() throws IOException {
         Scanner scanner = new Scanner(new FileReader("src/test/resources/input.txt"));
-
-        String s = new Challenger().fromScanner(scanner, Integer.class);
+        String s = new Challenger().fromScanner(scanner, FirstTestExample.class);
         assertThat(s, is("1"));
         FirstTestQuery firstTestQuery = new FirstTestQuery();
         /*File file = new File("src/test/resources/input.txt");
