@@ -1,7 +1,9 @@
 package com.furstenheim.challenger;
 
 import java.io.IOException;
+import java.lang.reflect.Constructor;
 import java.lang.reflect.Field;
+import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Type;
 import java.lang.reflect.TypeVariable;
@@ -23,19 +25,36 @@ public class Challenger {
             short.class,
             Integer.class,
             int.class,
-            float.class,
+            Long.class,
+            long.class,
             Float.class,
+            float.class,
             Double.class,
             double.class,
             BigDecimal.class,
             BigInteger.class,
             String.class
     );
-    public <T> T fromScanner(Scanner scanner, Type typeOfT) throws IOException {
-        if (typeOfT instanceof Class<?>) {
-            Class<?> rawType = getRawType(typeOfT);
+    public <T> T fromScanner(Scanner scanner, Type typeOfT)
+            throws IOException  {
+        if (!(typeOfT instanceof Class<?>)) {
+            throw new IllegalArgumentException("Top class must be object like");
+        }
+        Class<?> rawType = getRawType(typeOfT);
 
-            TypeParser typeParser = parseType(typeOfT);
+        TypeParser typeParser = parseType(typeOfT);
+        Visitor visitor = Visitor.newVisitor()
+                .isArrayEl(false)
+                .isClassElem(false)
+                .isLast(false)
+                .nElems(0)
+                .parser(typeParser)
+                .position(0)
+                .prev(null)
+                .value(buildObject(rawType))
+                .build();
+
+
             /*System.out.println(rawType);
             System.out.printf("class %s %s\n", rawType.toString(), rawType.toGenericString());
             Field[] declaredFields = rawType.getDeclaredFields();
@@ -51,13 +70,29 @@ public class Challenger {
                 System.out.println(Arrays.toString(actualTypeArguments));
             }*/
 
-        }
+
         return null;
     }
+    private Object buildObject (Class<?> type) {
+        try {
+            Constructor<?> declaredConstructor = type.getDeclaredConstructor();
+            Object newInstance = declaredConstructor.newInstance();
+            return newInstance;
+        } catch (NoSuchMethodException e) {
+            throw new RuntimeException(String.format("Class could not be created because constructor was not available %s", type.getTypeName()));
+        } catch (IllegalAccessException e) {
+            throw new RuntimeException(String.format("Class could not be created because constructor was not accessible %s", type.getTypeName()));
+        } catch (InstantiationException e) {
+            throw new RuntimeException(String.format("Class could not be instantiated %s", type.getTypeName()));
+        } catch (InvocationTargetException e) {
+            throw new RuntimeException(String.format("Constructor could not be invoked with no parameters for %s", type.getTypeName()));
+        }
+    }
+
 
     private TypeParser parseType (Type typeOf) {
         Class<?> clazz = getRawType(typeOf);
-        if (NATIVE_TYPES.stream().anyMatch(clazz::equals)) {
+        if (isNative(clazz)) {
             return new TypeParser(clazz, Kind.BASIC);
         }
         if (clazz.equals(List.class)) {
@@ -118,6 +153,11 @@ public class Challenger {
 
         return parser;
     }
+
+    static boolean isNative(Class<?> clazz) {
+        return NATIVE_TYPES.stream().anyMatch(clazz::equals);
+    }
+
     protected static Class<?> getRawType (Type type) {
         if (type instanceof Class<?>) {
             // type is a normal class.
