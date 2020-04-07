@@ -35,7 +35,8 @@ public class Challenger {
         if (typeOfT instanceof Class<?>) {
             Class<?> rawType = getRawType(typeOfT);
 
-            System.out.println(rawType);
+            TypeParser typeParser = parseType(typeOfT);
+            /*System.out.println(rawType);
             System.out.printf("class %s %s\n", rawType.toString(), rawType.toGenericString());
             Field[] declaredFields = rawType.getDeclaredFields();
             // ChallengeSerializable annotation = declaredFields[3].getAnnotation(ChallengeSerializable.class);
@@ -48,7 +49,7 @@ public class Challenger {
             if (genericType instanceof ParameterizedType) {
                 Type[] actualTypeArguments = ((ParameterizedType) genericType).getActualTypeArguments();
                 System.out.println(Arrays.toString(actualTypeArguments));
-            }
+            }*/
 
         }
         return null;
@@ -87,6 +88,10 @@ public class Challenger {
                                                new ArrayList<TypeParser>(fieldsWithAnnotation.size()),
                                                fieldsWithAnnotation.size(), null);
 
+        // Initialize array since indexes can come out of order
+        for ( int i = 0; i < fieldsWithAnnotation.size(); i++) {
+            parser.fields.add(null);
+        }
         Map<String, Integer> nameToField = new HashMap<String, Integer>();
         for (Field field : fieldsWithAnnotation) {
             Type genericType = field.getGenericType();
@@ -144,12 +149,12 @@ public class Challenger {
             // I'm not exactly sure why getRawType() returns Type instead of Class.
             // Neal isn't either but suspects some pathological case related
             // to nested classes exists.
-            Type rawType = parameterizedType.getRawType();
+            Type rawType = parameterizedType.getActualTypeArguments()[0];
             if (!(rawType instanceof Class)) {
                 throw new IllegalArgumentException("Unknown generic type");
             }
             return rawType;
         }
-        throw new IllegalArgumentException("Cannot get element raw type");
+        throw new IllegalArgumentException(String.format("Cannot get element raw type of %s", type.getTypeName()));
     }
 }

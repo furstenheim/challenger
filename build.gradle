@@ -10,7 +10,11 @@ repositories {
 }
 
 test {
-    testLogging.showStandardStreams = true
+    testLogging {
+        events "failed"
+        exceptionFormat "full"
+        showStandardStreams true
+    }
     useJUnitPlatform()
 }
 
