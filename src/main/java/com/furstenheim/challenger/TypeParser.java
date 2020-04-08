@@ -14,6 +14,7 @@ class TypeParser {
     public TypeParser(Class<?> ownClass, Kind kind, TypeParser elem, List<TypeParser> fields, Integer nFields,
             ParserField field) {
         this.ownClass = ownClass;
+        this.kind = kind;
         this.elem = elem;
         this.fields = fields;
         this.nFields = nFields;
@@ -22,6 +23,7 @@ class TypeParser {
 
     public TypeParser(Class<?> ownClass, Kind kind) {
         this.ownClass = ownClass;
+        this.kind = kind;
     }
 
     public Integer parseIndex (Field field) {

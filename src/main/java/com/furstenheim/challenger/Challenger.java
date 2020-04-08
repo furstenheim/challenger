@@ -1,9 +1,7 @@
 package com.furstenheim.challenger;
 
 import java.io.IOException;
-import java.lang.reflect.Constructor;
 import java.lang.reflect.Field;
-import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Type;
 import java.lang.reflect.TypeVariable;
@@ -51,10 +49,11 @@ public class Challenger {
                 .parser(typeParser)
                 .position(0)
                 .prev(null)
-                .value(buildObject(rawType))
+                .value(null)
                 .build();
 
 
+        return (T) visitor.parseInput(scanner);
             /*System.out.println(rawType);
             System.out.printf("class %s %s\n", rawType.toString(), rawType.toGenericString());
             Field[] declaredFields = rawType.getDeclaredFields();
@@ -69,25 +68,8 @@ public class Challenger {
                 Type[] actualTypeArguments = ((ParameterizedType) genericType).getActualTypeArguments();
                 System.out.println(Arrays.toString(actualTypeArguments));
             }*/
-
-
-        return null;
     }
-    private Object buildObject (Class<?> type) {
-        try {
-            Constructor<?> declaredConstructor = type.getDeclaredConstructor();
-            Object newInstance = declaredConstructor.newInstance();
-            return newInstance;
-        } catch (NoSuchMethodException e) {
-            throw new RuntimeException(String.format("Class could not be created because constructor was not available %s", type.getTypeName()));
-        } catch (IllegalAccessException e) {
-            throw new RuntimeException(String.format("Class could not be created because constructor was not accessible %s", type.getTypeName()));
-        } catch (InstantiationException e) {
-            throw new RuntimeException(String.format("Class could not be instantiated %s", type.getTypeName()));
-        } catch (InvocationTargetException e) {
-            throw new RuntimeException(String.format("Constructor could not be invoked with no parameters for %s", type.getTypeName()));
-        }
-    }
+
 
 
     private TypeParser parseType (Type typeOf) {

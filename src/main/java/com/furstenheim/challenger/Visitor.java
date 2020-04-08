@@ -1,7 +1,11 @@
 package com.furstenheim.challenger;
 
+import java.lang.reflect.Constructor;
+import java.lang.reflect.Field;
+import java.lang.reflect.InvocationTargetException;
 import java.math.BigDecimal;
 import java.math.BigInteger;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Scanner;
 
@@ -24,6 +28,8 @@ class Visitor {
                 fieldValue = reader.nextLine();
             } else if (delimiter.equals(Delimiter.SPACE)) {
                 fieldValue = reader.next();
+                // So that space is consumed
+                reader.skip(" ");
             } else {
                 throw new RuntimeException(String.format("Unknown delimiter %s", delimiter));
             }
@@ -56,14 +62,75 @@ class Visitor {
                     return new BigInteger(fieldValue);
                 }
             } catch (NumberFormatException e) {
-                throw new IllegalArgumentException(String.format("Field could not be parsed value %s for class %s", fieldValue, clazz.getName()));
+                throw new IllegalArgumentException(String.format("Field could not be parsed value \"%s\" for class %s", fieldValue, clazz.getName()));
             }
         }
         if (clazz.equals(List.class)) {
-            this.nElems;
-
+            ArrayList<Object> instance = new ArrayList<>(this.nElems);
+            for (int i = 0; i < this.nElems; i++) {
+                Visitor next = Visitor.newVisitor()
+                        .isArrayEl(true)
+                        .isClassElem(false)
+                        .isLast(i == this.nElems - 1)
+                        .nElems(0)
+                        .parser(this.parser.elem)
+                        .position(i)
+                        .prev(this)
+                        .value(null)
+                        .build();
+                Object child = next.parseInput(reader);
+                instance.add(child);
+            }
+            return instance;
         }
+        if (!this.parser.kind.equals(Kind.OBJECT)) {
+            throw new RuntimeException("Unknown case");
+        }
+        Object o = buildObject(clazz);
+        List<TypeParser> fields = this.parser.fields;
+        for (int i = 0; i < fields.size(); i++) {
+            TypeParser fieldParser = fields.get(i);
+            Integer nElems = 0;
+            if (fieldParser.kind.equals(Kind.LIST)) {
+                Field indexedByField;
+                try {
+                    indexedByField = clazz.getDeclaredField(fieldParser.field.indexedByString);
+                } catch (NoSuchFieldException e) {
+                    throw new RuntimeException(String.format("Missing property %s", fieldParser.field.indexedByString));
+                }
+                indexedByField.setAccessible(true);
+                Object indexedValue;
+                try {
+                    indexedValue = indexedByField.get(o);
+                } catch (IllegalAccessException e) {
+                    throw new RuntimeException(String.format("Could not access property %s", fieldParser.field));
+                }
+                nElems = (Integer) indexedValue;
 
+
+            }
+
+            Visitor next = Visitor.newVisitor()
+                    .isArrayEl(false)
+                    .isClassElem(true)
+                    .isLast(i == fields.size() - 1)
+                    .nElems(nElems)
+                    .parser(fieldParser)
+                    .position(i)
+                    .prev(this)
+                    .value(null)
+                    .build();
+            Object property = next.parseInput(reader);
+            try {
+                Field field = clazz.getDeclaredField(fieldParser.field.name);
+                field.set(o, property);
+            } catch (NoSuchFieldException e) {
+                throw new RuntimeException(String.format("Missing property %s", fieldParser.field.indexedByString));
+            } catch (IllegalAccessException e) {
+                throw new RuntimeException(String.format("Could not set property %s", fieldParser.field.indexedByString));
+            }
+        }
+        return o;
     }
 
     private Delimiter findDelimiter () {
@@ -85,6 +152,21 @@ class Visitor {
         throw new IllegalStateException("Unexpected");
     }
 
+    private static Object buildObject (Class<?> type) {
+        try {
+            Constructor<?> declaredConstructor = type.getDeclaredConstructor();
+            Object newInstance = declaredConstructor.newInstance();
+            return newInstance;
+        } catch (NoSuchMethodException e) {
+            throw new RuntimeException(String.format("Class could not be created because constructor was not available %s", type.getTypeName()));
+        } catch (IllegalAccessException e) {
+            throw new RuntimeException(String.format("Class could not be created because constructor was not accessible %s", type.getTypeName()));
+        } catch (InstantiationException e) {
+            throw new RuntimeException(String.format("Class could not be instantiated %s", type.getTypeName()));
+        } catch (InvocationTargetException e) {
+            throw new RuntimeException(String.format("Constructor could not be invoked with no parameters for %s", type.getTypeName()));
+        }
+    }
     private Visitor(Builder builder) {
         this.value = builder.value;
         this.parser = builder.parser;
