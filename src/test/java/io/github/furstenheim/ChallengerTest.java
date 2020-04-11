@@ -1,4 +1,4 @@
-package com.furstenheim.challenger;
+package io.github.furstenheim;
 
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;

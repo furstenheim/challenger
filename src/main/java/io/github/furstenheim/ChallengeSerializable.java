@@ -1,4 +1,4 @@
-package com.furstenheim.challenger;
+package io.github.furstenheim;
 
 import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;

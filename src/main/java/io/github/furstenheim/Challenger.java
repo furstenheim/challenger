@@ -1,4 +1,4 @@
-package com.furstenheim.challenger;
+package io.github.furstenheim;
 
 import java.lang.reflect.Field;
 import java.lang.reflect.ParameterizedType;

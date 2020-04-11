@@ -1,4 +1,4 @@
-package com.furstenheim.challenger;
+package io.github.furstenheim;
 
 public enum Kind {
     BASIC,

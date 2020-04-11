@@ -1,9 +1,10 @@
 plugins {
     id 'java'
+    id 'maven-publish'
 }
 
-group 'org.example'
-version '1.0-SNAPSHOT'
+group 'io.github.furstenheim'
+version '1.0'
 
 repositories {
     mavenCentral()
@@ -26,4 +27,16 @@ dependencies {
             "org.junit.jupiter:junit-jupiter-params:5.4.2",
             "com.shazam:shazamcrest:0.1"
     )
+}
+
+publishing {
+    publications {
+        maven(MavenPublication) {
+            groupId = 'io.github.furstenheim'
+            artifactId = 'challenger'
+            version = '1.0'
+
+            from components.java
+        }
+    }
 }
