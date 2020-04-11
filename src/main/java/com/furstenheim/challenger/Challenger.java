@@ -54,20 +54,6 @@ public class Challenger {
 
 
         return (T) visitor.parseInput(scanner);
-            /*System.out.println(rawType);
-            System.out.printf("class %s %s\n", rawType.toString(), rawType.toGenericString());
-            Field[] declaredFields = rawType.getDeclaredFields();
-            // ChallengeSerializable annotation = declaredFields[3].getAnnotation(ChallengeSerializable.class);
-            // System.out.println(annotation);
-            System.out.println(Arrays.toString(declaredFields));
-            Type genericType = declaredFields[1].getGenericType();
-            Class<?> rawType1 = getRawType(genericType);
-            System.out.println(rawType1.equals(java.util.List.class));
-            System.out.println("---------");
-            if (genericType instanceof ParameterizedType) {
-                Type[] actualTypeArguments = ((ParameterizedType) genericType).getActualTypeArguments();
-                System.out.println(Arrays.toString(actualTypeArguments));
-            }*/
     }
 
 

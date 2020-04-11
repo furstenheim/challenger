@@ -158,7 +158,7 @@ class Visitor {
             Object newInstance = declaredConstructor.newInstance();
             return newInstance;
         } catch (NoSuchMethodException e) {
-            throw new RuntimeException(String.format("Class could not be created because constructor was not available %s", type.getTypeName()));
+            throw new RuntimeException(String.format("Class could not be created because constructor was not available %s. You are probably misssing a no parameters constructor", type.getTypeName()));
         } catch (IllegalAccessException e) {
             throw new RuntimeException(String.format("Class could not be created because constructor was not accessible %s", type.getTypeName()));
         } catch (InstantiationException e) {

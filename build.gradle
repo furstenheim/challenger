@@ -22,5 +22,8 @@ dependencies {
     testCompile (
             "org.junit.jupiter:junit-jupiter-api:5.0.0-M4",
             "org.hamcrest:hamcrest-library:2.1",
-            "org.junit.jupiter:junit-jupiter-engine:5.5.2")
+            "org.junit.jupiter:junit-jupiter-engine:5.5.2",
+    )
+    testCompile group: 'com.shazam', name: 'shazamcrest', version: '0.1'
+
 }
