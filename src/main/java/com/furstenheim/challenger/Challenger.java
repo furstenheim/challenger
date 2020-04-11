@@ -1,6 +1,5 @@
 package com.furstenheim.challenger;
 
-import java.io.IOException;
 import java.lang.reflect.Field;
 import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Type;
@@ -33,12 +32,10 @@ public class Challenger {
             BigInteger.class,
             String.class
     );
-    public <T> T fromScanner(Scanner scanner, Type typeOfT)
-            throws IOException  {
+    public <T> T fromScanner(Scanner scanner, Type typeOfT) {
         if (!(typeOfT instanceof Class<?>)) {
             throw new IllegalArgumentException("Top class must be object like");
         }
-        Class<?> rawType = getRawType(typeOfT);
 
         TypeParser typeParser = parseType(typeOfT);
         Visitor visitor = Visitor.newVisitor()
@@ -137,9 +134,10 @@ public class Challenger {
         } else if (type instanceof ParameterizedType) {
             ParameterizedType parameterizedType = (ParameterizedType) type;
 
-            // I'm not exactly sure why getRawType() returns Type instead of Class.
-            // Neal isn't either but suspects some pathological case related
-            // to nested classes exists.
+            // Original comment from gson
+            // > I'm not exactly sure why getRawType() returns Type instead of Class.
+            // > Neal isn't either but suspects some pathological case related
+            // > to nested classes exists.
             Type rawType = parameterizedType.getRawType();
             if (!(rawType instanceof Class)) {
                 throw new IllegalArgumentException("Unknown generic type");
@@ -154,10 +152,11 @@ public class Challenger {
          if (type instanceof ParameterizedType) {
             ParameterizedType parameterizedType = (ParameterizedType) type;
 
-            // I'm not exactly sure why getRawType() returns Type instead of Class.
-            // Neal isn't either but suspects some pathological case related
-            // to nested classes exists.
-            Type rawType = parameterizedType.getActualTypeArguments()[0];
+             // Original comment from gson
+             // > I'm not exactly sure why getRawType() returns Type instead of Class.
+             // > Neal isn't either but suspects some pathological case related
+             // > to nested classes exists.
+             Type rawType = parameterizedType.getActualTypeArguments()[0];
             if (!(rawType instanceof Class)) {
                 throw new IllegalArgumentException("Unknown generic type");
             }
