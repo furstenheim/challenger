@@ -28,22 +28,29 @@ In this case the topic is about space travel. "1" the number of cases. Then we h
 public class TuentiChallenge11thQuestion {
     @ChallengeSerializable(index = 0)
     public Integer nCases;
+    
     @ChallengeSerializable(index = 1, indexedBy = "nCases")
     public List<TuentiChallenge11thCase> cases;
 
     public static class TuentiChallenge11thCase {
         @ChallengeSerializable(index = 0)
         public Integer nMoons;
+        
         @ChallengeSerializable(index = 1, elemDelimiter = Delimiter.SPACE, indexedBy = "nMoons")
         public List<Double> distance;
+        
         @ChallengeSerializable(index = 2, elemDelimiter = Delimiter.SPACE, indexedBy = "nMoons")
         public List<Double> positions;
+        
         @ChallengeSerializable(index = 3, elemDelimiter = Delimiter.SPACE, indexedBy = "nMoons")
         public List<Double> periods;
+        
         @ChallengeSerializable(index = 4, elemDelimiter = Delimiter.SPACE, indexedBy = "nMoons")
         public List<Integer> weights;
+        
         @ChallengeSerializable(index = 5)
         public Integer Capacity;
+        
         @ChallengeSerializable(index = 6)
         public Double range;
     }
