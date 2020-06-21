@@ -59,9 +59,10 @@ public class TuentiChallenge11thQuestion {
 
 In order to parse the input, we only need:
 
-    Scanner scanner = new Scanner(System.in);
-    TuentiChallenge11thQuestion parsedInput = (TuentiChallenge11thQuestion)new Challenger().fromScanner(scanner, TuentiChallenge11thQuestion.class);
-
+```java
+Scanner scanner = new Scanner(System.in);
+TuentiChallenge11thQuestion parsedInput = (TuentiChallenge11thQuestion)new Challenger().fromScanner(scanner, TuentiChallenge11thQuestion.class);
+```
 And that would be all:
     
     System.out.println(parsedInput.nCases);
